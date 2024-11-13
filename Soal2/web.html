@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask API Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sensor Data</h1>
+    
+    <h2>Sensor Readings</h2>
+    <table id="sensorDataTable">
+        <thead>
+            <tr>
+                <th>IDX</th>
+                <th>Suhu</th>
+                <th>Humidity</th>
+                <th>Brightness</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <h2>Month-Year List</h2>
+    <ul id="monthYearList">
+        <!-- Month-Year list will be inserted here by JavaScript -->
+    </ul>
+
+    <script>
+        // Fetch data from the Flask API endpoint
+        fetch('/get_data')
+            .then(response => response.json())
+            .then(data => {
+                // Insert sensor data into the table
+                const sensorDataTable = document.getElementById('sensorDataTable').getElementsByTagName('tbody')[0];
+                data.nilai_suhu_max_humid_max.forEach(entry => {
+                    const row = sensorDataTable.insertRow();
+                    row.insertCell(0).textContent = entry.idx;
+                    row.insertCell(1).textContent = entry.suhu;
+                    row.insertCell(2).textContent = entry.humid;
+                    row.insertCell(3).textContent = entry.kecerahan;
+                    row.insertCell(4).textContent = entry.timestamp;
+                });
+
+                // Insert month-year list
+                const monthYearList = document.getElementById('monthYearList');
+                data.month_year_max.forEach(month => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = month.month_year;
+                    monthYearList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+</body>
+</html>
